@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, send_file
 import joblib
 import pandas as pd
 import logging
@@ -55,6 +55,16 @@ def predict():
     except Exception as e:
         app.logger.error(f'Error en la predicción: {str(e)}')
         return jsonify({'error': str(e)}), 400
+
+@app.route('/download')
+def download_file():
+    try:
+        # Ruta del archivo CSV
+        filepath = "Concrete Compressive Strength.csv"
+        return send_file(filepath, as_attachment=True)
+    except Exception as e:
+        app.logger.error(f'Error al descargar el archivo: {str(e)}')
+        return jsonify({'error': 'No se pudo descargar el archivo.'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,10 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Concrete</title>
+    <title>Concrete Compressive Strength</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #f9f9f9;
+            color: #333;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 100%; 
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        .background-image {
+            background-image: url('{{ url_for('static', filename='images/compressive-strength-test-on-concrete-cubes.webp') }}');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .section-10 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 10vh;
+            width: 100%;
+            background-color: #f0f4f8;
+        }
+        .section-80 {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+            width: 100%;
+        }
+        .form-container {
+            width: 50%;
+            margin-top: 40px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        /* Ocultar el contenedor del resultado por defecto */
+        #resultado-container {
+            display: none;
+        }
+    </style>
     <script>
         function clasificarPaciente(event) {
             event.preventDefault();
@@ -12,76 +79,176 @@
             const cement = document.getElementById('cement').value;
             const blast = document.getElementById('blast').value;
             const water = document.getElementById('water').value;
-            const superplasticizer= document.getElementById('superplasticizer').value;
-            const age= document.getElementById('age').value;
+            const superplasticizer = document.getElementById('superplasticizer').value;
+            const age = document.getElementById('age').value;
 
-            fetch('/predict', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `cement=${cement}&blast=${blast}&water=${water}&superplasticizer=${superplasticizer}&age=${age}`,
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    document.getElementById('resultado').innerText = 'Error: ' + data.error;
-                } else {
-                    document.getElementById('resultado').innerText = 'El porcentaje de recomendacion del producto es ' + data.prediction;
-                }
-            })
-            .catch(error => {
-                document.getElementById('resultado').innerText = 'Error en la solicitud.';
-                console.error('Error:', error);
-            });
+            if (cement !== "" && blast !== "" && water !== "" && superplasticizer !== "" && age !== "" ) {
+                fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `cement=${cement}&blast=${blast}&water=${water}&superplasticizer=${superplasticizer}&age=${age}`,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const resultadoDiv = document.getElementById('resultado-container');
+                    const resultadoP = document.getElementById('resultado');
+
+                    if (data.error) {
+                        resultadoP.innerText = 'Error: ' + data.error;
+                        resultadoDiv.style.display = 'flex'; // Mostrar el div
+                    } else {
+                        resultadoP.innerText = 'El porcentaje de recomendación del producto es ' + data.prediction;
+                        resultadoDiv.style.display = 'flex'; // Mostrar el div
+                    }
+                })
+                .catch(error => {
+                    const resultadoDiv = document.getElementById('resultado-container');
+                    const resultadoP = document.getElementById('resultado');
+                    resultadoP.innerText = 'Error en la solicitud.';
+                    resultadoDiv.style.display = 'flex'; // Mostrar el div
+                    console.error('Error:', error);
+                });
+            } else {
+                alert("Todos los campos son obligatorios")
+            }
         }
     </script>
 </head>
-<body class="">
-    <div class="flex justify-center w-full h-full">
-        <form id="formulario" onsubmit="clasificarPaciente(event)" class="shadow-lg p-4 mt-5">
-            <label for="temperature-slider" class="pl-4 block text-gray-700 text-sm font-bold mb-2">Cemento</label>
-            <input
-                id="cement"
-                name="cement"
-                step="0.01"
-                class="border rounded px-3 py-2 w-full"
-            >
+<body class="bg-gray-100 flex flex-col items-center justify-center h-screen">
+    <div class="background-image"></div>
 
-            <label for="temperature-slider" class="pl-4 block text-gray-700 text-sm font-bold mb-2">blast</label>
-            <input
-                id="blast"
-                name="blast"
-                step="0.01"
-                class="border rounded px-3 py-2 w-full"
-            >
-            <label for="temperature-slider" class="pl-4 block text-gray-700 text-sm font-bold mb-2">water</label>
-            <input
-                id="water"
-                name="water"
-                step="0.01"
-                class="border rounded px-3 py-2 w-full"
-            >
-
-            <label for="temperature-slider" class="pl-4 block text-gray-700 text-sm font-bold mb-2">superplasticizer</label>
-            <input
-                id="superplasticizer"
-                name="superplasticizer"
-                step="0.01"
-                class="border rounded px-3 py-2 w-full"
-            >
-
-            <label for="temperature-slider" class="pl-4 block text-gray-700 text-sm font-bold mb-2">age</label>
-            <input
-                id="age"
-                name="age"
-                step="0.01"
-                class="border rounded px-3 py-2 w-full"
-            >
-            <button type="submit"  class=" w-full mt-2 shadow-lg p-2 hover:text-blue-300 bg-blue-200 rounded-md ">Enviar</button>
-            <p id="resultado">  </p>
-        </form>
+    <!-- Sección 1: Cards -->
+    <div class="section-10">
+        <div class="flex">
+            <h1 class="font-bold text-2xl">Modelo Predictivo para determinar la resistencia de compresión del concreto</h1>
+        </div>
     </div>
-</body>
 
+    <div class="section-80">
+        <div class="grid grid-cols-5 gap-4 ml-20 mr-20">
+            <div class="rounded-lg shadow-lg">
+                <div class="bg-green-500 h-1/4 flex justify-center items-center">
+                    <h3 class="text-lg font-bold text-white">Cemento (kg/m³)</h3>
+                </div>
+                <div class="bg-green-300 h-3/4 flex justify-center items-center p-2">
+                    <p class="text-center">El cemento actúa como el principal aglutinante en la mezcla, proporcionando la base para la resistencia del concreto.</p>
+                </div>
+            </div>
+
+            <div class="rounded-lg shadow-lg">
+                <div class="bg-green-500 h-1/4 flex justify-center items-center">
+                    <h3 class="text-lg font-bold text-white">Escoria de Alto Horno (kg/m³)</h3>
+                </div>
+                <div class="bg-green-300 h-3/4 flex justify-center items-center p-2">
+                    <p>La escoria es un subproducto industrial que mejora las propiedades del concreto como resistencia y durabilidad.</p>
+                </div>
+            </div>
+
+            <div class="rounded-lg shadow-lg">
+                <div class="bg-green-500 h-1/4 flex justify-center items-center">
+                    <h3 class="text-lg font-bold text-white">Agua (kg/m³)</h3>
+                </div>
+                <div class="bg-green-300 h-3/4 flex justify-center items-center p-2">
+                    <p>El agua es esencial para la hidratación del cemento y permite que la mezcla adquiera su consistencia.</p>
+                </div>
+            </div>
+
+            <div class="rounded-lg shadow-lg">
+                <div class="bg-green-500 h-1/4 flex justify-center items-center">
+                    <h3 class="text-lg font-bold text-white">Superplastificante (kg/m³)</h3>
+                </div>
+                <div class="bg-green-300 h-3/4 flex justify-center items-center p-2">
+                    <p>Los superplastificantes son aditivos que mejoran la fluidez y trabajabilidad del concreto sin afectar su resistencia.</p>
+                </div>
+            </div>
+
+            <div class="rounded-lg shadow-lg">
+                <div class="bg-green-500 h-1/4 flex justify-center items-center">
+                    <h3 class="text-lg font-bold text-white">Edad (días)</h3>
+                </div>
+                <div class="bg-green-300 h-3/4 flex justify-center items-center p-2">
+                    <p>La edad del concreto afecta su resistencia, ya que la hidratación y endurecimiento del cemento ocurren con el tiempo.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <form id="formulario" onsubmit="clasificarPaciente(event)" class="grid grid-cols-2 gap-4">
+                <div class="relative">
+                    <label for="temperature-slider" class="pl-4 block text-gray-700 text-sm font-bold mb-2">Cemento</label>
+                    <input
+                        id="cement"
+                        name="cement"
+                        type="number"
+                        step="0.01"
+                        class="border rounded px-3 py-2 w-full"
+                    >
+                </div>
+
+                <div class="relative">
+                    <label for="temperature-slider" class="pl-4 block text-gray-700 text-sm font-bold mb-2">Blast</label>
+                    <input
+                        id="blast"
+                        name="blast"
+                        type="number"
+                        step="0.01"
+                        class="border rounded px-3 py-2 w-full"
+                    >
+                </div>
+
+                <div class="relative">
+                    <label for="temperature-slider" class="pl-4 block text-gray-700 text-sm font-bold mb-2">Water</label>
+                    <input
+                        id="water"
+                        name="water"
+                        type="number"
+                        step="0.01"
+                        class="border rounded px-3 py-2 w-full"
+                    >
+                </div>
+
+                <div class="relative">
+                    <label for="temperature-slider" class="pl-4 block text-gray-700 text-sm font-bold mb-2">Superplasticizer</label>
+                    <input
+                        id="superplasticizer"
+                        name="superplasticizer"
+                        type="number"
+                        step="0.01"
+                        class="border rounded px-3 py-2 w-full"
+                    >
+                </div>
+
+                <div class="relative">
+                    <label for="temperature-slider" class="pl-4 block text-gray-700 text-sm font-bold mb-2">Age</label>
+                    <input
+                        id="age"
+                        name="age"
+                        type="number"
+                        step="0.01"
+                        class="border rounded px-3 py-2 w-full"
+                    >
+                </div>
+
+                <button type="submit" class="col-span-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-700 transition">
+                    Enviar
+                </button>
+            </form>
+            <!-- Div contenedor del resultado, inicialmente oculto -->
+            <div id="resultado-container" class="w-full bg-green-500 mt-5 p-2 flex justify-center items-center">
+                <p id="resultado" class="text-white font-bold"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección 2: Footer -->
+    <div class="section-10">
+        <h1 class="font-bold text-xl">Angel Francisco Martinez Hernandez 9A</h1>
+    </div>
+
+    <!-- <button onclick="window.location.href='/download'" class="mt-4 bg-green-500 text-white p-2 rounded-md hover:bg-green-700 transition">
+        Descargar Dataset
+    </button> -->
+</body>
 </html>
