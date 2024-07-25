@@ -8,10 +8,9 @@
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto p-6">
-        <div class="flex justify-center">
+        <div class="flex">
             <div class="w-full max-w-md">
-                <h2 class="text-2xl font-bold mb-4 text-center">Formulario de Encuesta de un Servicio</h2>
-                <form id="predictionForm" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                <form id="predictionForm">
                     <div class="mb-4">
                         <label for="tiempo_espera" class="block text-gray-700 text-sm font-bold mb-2">Tiempo de espera en minutos</label>
                         <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="tiempo_espera" required>
@@ -63,7 +62,7 @@
                         Enviar
                     </button>
                 </form>
-                <div class="mt-3" id="predictionResult"></div>
+                <div class="mt-3 bg-blue-400 text-white font-bold p-2 rounded-lg text-center hidden" id="predictionResult"></div>
             </div>
         </div>
     </div>
@@ -94,7 +93,9 @@
             });
 
             const result = await response.json();
-            document.getElementById('predictionResult').innerText = `Predicción: ${result.prediction}`;
+            const predictionResult = document.getElementById('predictionResult');
+            predictionResult.innerText = `Predicción: ${result.prediction}`;
+            predictionResult.classList.remove('hidden');
         });
     </script>
 </body>
