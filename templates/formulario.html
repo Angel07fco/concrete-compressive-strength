@@ -3,252 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Concrete Compressive Strength</title>
+    <title>Formulario de Encuesta de un Servicio</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-        .tooltip {
-            position: relative;
-            display: inline-block;
-            cursor: pointer;
-        }
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 200px;
-            background-color: #f9f9f9;
-            color: #333;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px 0;
-            position: absolute;
-            z-index: 1;
-            bottom: 100%; 
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-        }
-        .background-image {
-            background-image: url('{{ url_for('static', filename='images/compressive-strength-test-on-concrete-cubes.webp') }}');
-            background-size: cover;
-            background-position: center;
-            opacity: 0.2;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-        .section-10 {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 10vh;
-            width: 100%;
-            background-color: #f0f4f8;
-        }
-        .section-80 {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 80vh;
-            width: 100%;
-        }
-        .form-container {
-            width: 50%;
-            margin-top: 40px;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        /* Ocultar el contenedor del resultado por defecto */
-        #resultado-container {
-            display: none;
-        }
-    </style>
-    <script>
-        function clasificarPaciente(event) {
-            event.preventDefault();
-
-            const cement = document.getElementById('cement').value;
-            const blast = document.getElementById('blast').value;
-            const water = document.getElementById('water').value;
-            const superplasticizer = document.getElementById('superplasticizer').value;
-            const age = document.getElementById('age').value;
-
-            if (cement !== "" && blast !== "" && water !== "" && superplasticizer !== "" && age !== "" ) {
-                fetch('/predict', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `cement=${cement}&blast=${blast}&water=${water}&superplasticizer=${superplasticizer}&age=${age}`,
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const resultadoDiv = document.getElementById('resultado-container');
-                    const resultadoP = document.getElementById('resultado');
-
-                    if (data.error) {
-                        resultadoP.innerText = 'Error: ' + data.error;
-                        resultadoDiv.style.display = 'flex'; // Mostrar el div
-                    } else {
-                        resultadoP.innerText = 'El porcentaje de recomendación del producto es ' + data.prediction;
-                        resultadoDiv.style.display = 'flex'; // Mostrar el div
-                    }
-                })
-                .catch(error => {
-                    const resultadoDiv = document.getElementById('resultado-container');
-                    const resultadoP = document.getElementById('resultado');
-                    resultadoP.innerText = 'Error en la solicitud.';
-                    resultadoDiv.style.display = 'flex'; // Mostrar el div
-                    console.error('Error:', error);
-                });
-            } else {
-                alert("Todos los campos son obligatorios")
-            }
-        }
-    </script>
 </head>
-<body class="bg-gray-100 flex flex-col items-center justify-center h-screen">
-    <div class="background-image"></div>
-
-    <!-- Sección 1: Cards -->
-    <div class="section-10">
-        <div class="flex">
-            <h1 class="font-bold text-2xl">Modelo Predictivo para determinar la resistencia de compresión del concreto</h1>
-        </div>
-    </div>
-
-    <div class="section-80">
-        <div class="grid grid-cols-5 gap-4 ml-20 mr-20">
-            <div class="rounded-lg shadow-lg">
-                <div class="bg-green-500 h-1/4 flex justify-center items-center">
-                    <h3 class="text-lg font-bold text-white">Cemento (kg/m³)</h3>
-                </div>
-                <div class="bg-green-300 h-3/4 flex justify-center items-center p-2">
-                    <p class="text-center">El cemento actúa como el principal aglutinante en la mezcla, proporcionando la base para la resistencia del concreto.</p>
-                </div>
-            </div>
-
-            <div class="rounded-lg shadow-lg">
-                <div class="bg-green-500 h-1/4 flex justify-center items-center">
-                    <h3 class="text-lg font-bold text-white">Escoria de Alto Horno (kg/m³)</h3>
-                </div>
-                <div class="bg-green-300 h-3/4 flex justify-center items-center p-2">
-                    <p>La escoria es un subproducto industrial que mejora las propiedades del concreto como resistencia y durabilidad.</p>
-                </div>
-            </div>
-
-            <div class="rounded-lg shadow-lg">
-                <div class="bg-green-500 h-1/4 flex justify-center items-center">
-                    <h3 class="text-lg font-bold text-white">Agua (kg/m³)</h3>
-                </div>
-                <div class="bg-green-300 h-3/4 flex justify-center items-center p-2">
-                    <p>El agua es esencial para la hidratación del cemento y permite que la mezcla adquiera su consistencia.</p>
-                </div>
-            </div>
-
-            <div class="rounded-lg shadow-lg">
-                <div class="bg-green-500 h-1/4 flex justify-center items-center">
-                    <h3 class="text-lg font-bold text-white">Superplastificante (kg/m³)</h3>
-                </div>
-                <div class="bg-green-300 h-3/4 flex justify-center items-center p-2">
-                    <p>Los superplastificantes son aditivos que mejoran la fluidez y trabajabilidad del concreto sin afectar su resistencia.</p>
-                </div>
-            </div>
-
-            <div class="rounded-lg shadow-lg">
-                <div class="bg-green-500 h-1/4 flex justify-center items-center">
-                    <h3 class="text-lg font-bold text-white">Edad (días)</h3>
-                </div>
-                <div class="bg-green-300 h-3/4 flex justify-center items-center p-2">
-                    <p>La edad del concreto afecta su resistencia, ya que la hidratación y endurecimiento del cemento ocurren con el tiempo.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-container">
-            <form id="formulario" onsubmit="clasificarPaciente(event)" class="grid grid-cols-2 gap-4">
-                <div class="relative">
-                    <label for="temperature-slider" class="pl-4 block text-gray-700 text-sm font-bold mb-2">Cemento</label>
-                    <input
-                        id="cement"
-                        name="cement"
-                        type="number"
-                        step="0.01"
-                        class="border rounded px-3 py-2 w-full"
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <div class="flex justify-center">
+            <div class="w-full max-w-md">
+                <h2 class="text-2xl font-bold mb-4 text-center">Formulario de Encuesta de un Servicio</h2>
+                <form id="predictionForm" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                    <div class="mb-4">
+                        <label for="tiempo_espera" class="block text-gray-700 text-sm font-bold mb-2">Tiempo de espera en minutos</label>
+                        <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="tiempo_espera" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="duracion_atencion" class="block text-gray-700 text-sm font-bold mb-2">Duración de atención en minutos</label>
+                        <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="duracion_atencion" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="costo_servicio" class="block text-gray-700 text-sm font-bold mb-2">Costo del servicio</label>
+                        <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="costo_servicio" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="calidad_atencion" class="block text-gray-700 text-sm font-bold mb-2">Calidad de atención</label>
+                        <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="calidad_atencion" required min="1" max="5">
+                    </div>
+                    <div class="mb-4">
+                        <label for="instalaciones" class="block text-gray-700 text-sm font-bold mb-2">Instalaciones</label>
+                        <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="instalaciones" required min="1" max="5">
+                    </div>
+                    <div class="mb-4">
+                        <label for="comunicacion" class="block text-gray-700 text-sm font-bold mb-2">Comunicación</label>
+                        <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="comunicacion" required min="1" max="5">
+                    </div>
+                    <div class="mb-4">
+                        <label for="facilidad_de_pago" class="block text-gray-700 text-sm font-bold mb-2">Facilidad de pago</label>
+                        <input type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="facilidad_de_pago" required min="1" max="5">
+                    </div>
+                    <div class="mb-4">
+                        <label for="experiencia_cliente" class="block text-gray-700 text-sm font-bold mb-2">Experiencia del cliente</label>
+                        <select id="experiencia_cliente" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                            <option value="buena">Buena</option>
+                            <option value="regular">Regular</option>
+                            <option value="mala">Mala</option>
+                            <option value="pesima">Pésima</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="recomendaciones" class="block text-gray-700 text-sm font-bold mb-2">¿Recomendarías el servicio?</label>
+                        <select id="recomendaciones" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                            <option value="si">Sí</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+                    <button
+                        type="submit"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     >
-                </div>
-
-                <div class="relative">
-                    <label for="temperature-slider" class="pl-4 block text-gray-700 text-sm font-bold mb-2">Blast</label>
-                    <input
-                        id="blast"
-                        name="blast"
-                        type="number"
-                        step="0.01"
-                        class="border rounded px-3 py-2 w-full"
-                    >
-                </div>
-
-                <div class="relative">
-                    <label for="temperature-slider" class="pl-4 block text-gray-700 text-sm font-bold mb-2">Water</label>
-                    <input
-                        id="water"
-                        name="water"
-                        type="number"
-                        step="0.01"
-                        class="border rounded px-3 py-2 w-full"
-                    >
-                </div>
-
-                <div class="relative">
-                    <label for="temperature-slider" class="pl-4 block text-gray-700 text-sm font-bold mb-2">Superplasticizer</label>
-                    <input
-                        id="superplasticizer"
-                        name="superplasticizer"
-                        type="number"
-                        step="0.01"
-                        class="border rounded px-3 py-2 w-full"
-                    >
-                </div>
-
-                <div class="relative">
-                    <label for="temperature-slider" class="pl-4 block text-gray-700 text-sm font-bold mb-2">Age</label>
-                    <input
-                        id="age"
-                        name="age"
-                        type="number"
-                        step="0.01"
-                        class="border rounded px-3 py-2 w-full"
-                    >
-                </div>
-
-                <button type="submit" class="col-span-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-700 transition">
-                    Enviar
-                </button>
-            </form>
-            <!-- Div contenedor del resultado, inicialmente oculto -->
-            <div id="resultado-container" class="w-full bg-green-500 mt-5 p-2 flex justify-center items-center">
-                <p id="resultado" class="text-white font-bold"></p>
+                        Enviar
+                    </button>
+                </form>
+                <div class="mt-3" id="predictionResult"></div>
             </div>
         </div>
     </div>
 
-    <!-- Sección 2: Footer -->
-    <div class="section-10">
-        <h1 class="font-bold text-xl">Angel Francisco Martinez Hernandez 9A</h1>
-    </div>
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = {
+                tiempo_espera: parseInt(document.getElementById('tiempo_espera').value),
+                duracion_atencion: parseInt(document.getElementById('duracion_atencion').value),
+                costo_servicio: parseInt(document.getElementById('costo_servicio').value),
+                calidad_atencion: parseInt(document.getElementById('calidad_atencion').value),
+                instalaciones: parseInt(document.getElementById('instalaciones').value),
+                comunicacion: parseInt(document.getElementById('comunicacion').value),
+                facilidad_de_pago: parseInt(document.getElementById('facilidad_de_pago').value),
+                experiencia_cliente: document.getElementById('experiencia_cliente').value,
+                recomendaciones: document.getElementById('recomendaciones').value
+            };
 
-    <!-- <button onclick="window.location.href='/download'" class="mt-4 bg-green-500 text-white p-2 rounded-md hover:bg-green-700 transition">
-        Descargar Dataset
-    </button> -->
+            console.log(formData)
+
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+            document.getElementById('predictionResult').innerText = `Predicción: ${result.prediction}`;
+        });
+    </script>
 </body>
 </html>
